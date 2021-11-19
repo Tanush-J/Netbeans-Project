@@ -1,0 +1,66 @@
+create database project;
+use project;
+
+create table patient (patientID varchar(10)primary key,name varchar(100), contactNumber varchar(10),
+						age varchar(3), gender varchar(10),bloodGroup varchar(20), address varchar(100), 
+						anyMajorDisease varchar(500));
+                        
+select *from patient;
+drop table patient;
+
+insert into patient values(1,'Ramesh','1234567895',19,'Male','B+','Tamil Nadu','No');
+insert into patient values(2,'Sakshi','1234567895',20,'Female','A-','Mumbai','Cancer');
+insert into patient values(3,'Suresh','1234567895',28,'Male','A+','Pune','Diabetes');
+insert into patient values(4,'Jaya','1234567895',22,'Female','O+','Bangalore','Kidney Dialysis');
+
+create table patientreport (patientID int primary key, symptom varchar(200), diagnosis varchar(200),
+							medicines varchar(200), wardReq varchar(5), typeward varchar(10));
+                            
+select *from patientreport;
+drop table patientreport;
+
+insert into patientreport values(1,'fever','viral fever','paracetamol','YES','General');
+insert into patientreport values(2,'fever','viral fever','paracetamol','NO',null);
+insert into patientreport values(3,'common cold','common cold','paracetamol','YES','Single');
+insert into patientreport values(4,'fever','viral fever','paracetamol','NO',null);
+
+create table patienthistory(id int primary key, date date not null, conditions varchar(30) not null,
+								surgeries varchar(30) not null,
+								medications varchar(30) not null);
+
+
+create table diagnose(demail varchar(30) not null, apptid int not null, diagnosis varchar(30) not null,
+						prescription varchar(30) not null,
+						foreign key(demail) references doctor(email),
+						foreign key(apptid) references appointments(id),
+						primary key(demail, apptid));
+                        
+create table appointments(patientID int primary key, date date not null, appointmenttime time, status varchar(20));
+
+insert into appointments values(1,'2019-05-19','9:00','Done');
+insert into appointments values(2,'2019-05-24','10:00','Done');
+insert into appointments values(3,'2019-06-04','11:30','Done');
+insert into appointments values(4,'2020-07-08','10:30','Done');
+
+
+-- Trigger
+delimiter $$
+create trigger convert_name before insert on patient
+for each row
+begin
+ set new.name=ucase(new.name) ;
+end $$
+
+delimiter ;
+drop trigger convert_name;
+
+-- Procedure
+delimiter $$
+create procedure count_appointments()
+begin
+select count(*) from appointments where month(date)=05;
+end $$
+
+delimiter ;
+
+call count_appointments;
